@@ -17,17 +17,35 @@
 
 %start program
 
-%token WS INT STR ID LPAREN RPAREN LSQUARE RSQUARE DOT
+%token INT STR ID
+%token '(' ')' '[' ']' '.' '|'
 %type <int_val> INT
 %type <str_val> STR ID
    
 %%
 
 program: /* empty */
-       | program expr
+       | program edge
+       | INT
+       | STR
 ;
 
-expr: INT { printf("%d", $1); }
+edge: '.' sexpr
+    | '[' INT ']'
+;
+
+idstr: ID
+     | STR
+;
+
+sexpr: idstr
+     | idstr '[' INT ']'
+     | '[' listOfIds ']'
+     | idstr '(' STR ')'
+;
+
+listOfIds: idstr
+         | idstr ',' listOfIds
 ;
 
 %%
