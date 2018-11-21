@@ -2,8 +2,10 @@
 /* calc.y */
 
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
+    #include "../src/jed.hpp"
+    #include <string>
+    #include <iostream>
+
     int yyerror(const char *s);
     int yylex(void);
 %}
@@ -12,7 +14,7 @@
 
 %union {
     int int_val;
-    char *str_val;
+    std::string *str_val;
 }
 
 %start program
@@ -20,8 +22,8 @@
 %token INT STR ID
 %token '(' ')' '[' ']' '.' '|'
 %type <int_val> INT
-%type <str_val> STR ID
-   
+%type <str_val> STR ID idstr
+
 %%
 
 program: /* empty */
@@ -40,8 +42,8 @@ idstr: ID
 
 sexpr: idstr
      | idstr '[' INT ']'
-     | '[' listOfIds ']'
      | idstr '(' STR ')'
+     | '[' listOfIds ']'
 ;
 
 listOfIds: idstr
@@ -57,7 +59,7 @@ int yyerror(const char *s)
     extern int yylineno;
     extern char *yytext;
      
-    fprintf(stderr, "Error on line %d: %s", yylineno, yytext);
+    fprintf(stderr, "Parse error: %s on line %d\n", s, yylineno);
     exit(1);
 }
 

@@ -1,5 +1,6 @@
 %{
     /* Jed Lexer */
+    #include <string>
 %}
 
 %option yylineno
@@ -16,7 +17,7 @@ identifiers   ([a-zA-Z_])([a-zA-Z0-9_])*
 %%
 
 {integers}      { yylval.int_val = atoi(yytext); return INT; }
-{str}           return STR;
+{str}           { *yylval.str_val = std::string(yytext); return STR; }
 {identifiers}   return ID;
 ","             return ',';
 "|"             return '|';

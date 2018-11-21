@@ -1,6 +1,6 @@
 # Compiler
-CC   = gcc
-OPTS = -g -O2
+CC   = g++
+OPTS = -std=gnu++11 -g
 
 SRC_DIR = 'src'
 OBJ_DIR = 'obj'
