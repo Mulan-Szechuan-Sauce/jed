@@ -20,30 +20,27 @@
 %start program
 
 %token INT STR ID
-%token '(' ')' '[' ']' '.' '|'
+%token '(' ')' '[' ']' '.' '|' '{' '}'
 %type <int_val> INT
 %type <str_val> STR ID idstr
 
 %%
 
 program: /* empty */
-       | program edge
-       | INT
-       | STR
+       | sexpr { $$ = new NodeRoot($1); }
+       | INT { $$ = new IntRoot($1); }
+       | STR { $$ = new StrRoot($1); }
 ;
 
-edge: '.' sexpr
-    | '[' INT ']'
+idstr: ID { $$ = $1 }
+     | STR { $$ = $1 }
 ;
 
-idstr: ID
-     | STR
-;
-
-sexpr: idstr
-     | idstr '[' INT ']'
-     | idstr '(' STR ')'
-     | '[' listOfIds ']'
+sexpr: '.' idstr
+     | '.' '{' listOfIds '}'
+     | sexpr '[' INT ']'
+     | sexpr '(' STR ')'
+     | sexpr '.' idstr
 ;
 
 listOfIds: idstr
