@@ -10,20 +10,23 @@ public:
     virtual bool matches(void *other) = 0;
 };
 
-class IntRoot : Root {
+class IntRoot : public Root {
 public:
     int value;
     IntRoot(int value) : value(value) {}
+    bool matches(void *other);
 };
 
-class StrRoot : Root {
+class StrRoot : public Root {
 public:
     std::string value;
-    StrRoot(std::string value) : value(value) {}
+    StrRoot(std::string *value) : value(*value) {}
+    bool matches(void *other);
 };
 
-class NodeRoot : Root {
+class NodeRoot : public Root {
 public:
-    Node value;
-    NodeRoot(Node value) : value(value) {}
+    Node *value;
+    NodeRoot(Node *value) : value(value) {}
+    bool matches(void *other);
 };

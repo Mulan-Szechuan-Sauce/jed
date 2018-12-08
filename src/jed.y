@@ -15,6 +15,8 @@
 %union {
     int int_val;
     std::string *str_val;
+    Root *root_val;
+    Node *node_val;
 }
 
 %start program
@@ -23,6 +25,8 @@
 %token '(' ')' '[' ']' '.' '|' '{' '}'
 %type <int_val> INT
 %type <str_val> STR ID idstr
+%type <root_val> program
+%type <node_val> sexpr
 
 %%
 
@@ -32,15 +36,15 @@ program: /* empty */
        | STR { $$ = new StrRoot($1); }
 ;
 
-idstr: ID { $$ = $1 }
-     | STR { $$ = $1 }
+idstr: ID { $$ = $1; }
+     | STR { $$ = $1; }
 ;
 
-sexpr: '.' idstr
-     | '.' '{' listOfIds '}'
-     | sexpr '[' INT ']'
-     | sexpr '(' STR ')'
-     | sexpr '.' idstr
+sexpr: '.' idstr { $$ = new Node(); }
+     | '.' '{' listOfIds '}' { $$ = new Node(); }
+     | sexpr '[' INT ']' { $$ = new Node(); }
+     | sexpr '(' STR ')' { $$ = new Node(); }
+     | sexpr '.' idstr { $$ = new Node(); }
 ;
 
 listOfIds: idstr
