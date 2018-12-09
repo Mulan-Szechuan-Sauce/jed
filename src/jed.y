@@ -3,8 +3,10 @@
 
 %{
     #include "../src/jed.hpp"
+    #include <json.hpp>
     #include <string>
     #include <iostream>
+    using json = nlohmann::json;
 
     int yyerror(const char *s);
     int yylex(void);
@@ -13,7 +15,7 @@
 %error-verbose
 
 %union {
-    int int_val;
+    int64_t int_val;
     std::string *str_val;
     Root *root_val;
     Node *node_val;
@@ -30,8 +32,7 @@
 
 %%
 
-program: /* empty */
-       | sexpr { $$ = new NodeRoot($1); }
+program: sexpr { $$ = new NodeRoot($1); }
        | INT { $$ = new IntRoot($1); }
        | STR { $$ = new StrRoot($1); }
 ;
@@ -59,12 +60,30 @@ int yyerror(const char *s)
 {
     extern int yylineno;
     extern char *yytext;
-     
+
     fprintf(stderr, "Parse error: %s on line %d\n", s, yylineno);
     exit(1);
 }
 
 int main() {
+    json j2 = {
+               {"pi", 3.141},
+               {"happy", true},
+               {"name", "Niels"},
+               {"nothing", nullptr},
+               {"answer", {
+                           {"everything", 42}
+                   }},
+               {"list", {1, 0, 2}},
+               {"object", {
+                           {"currency", "USD"},
+                           {"value", 42.99}
+                   }}
+    };
+
+    std::cout << typeid(j2["pi"]).name() << std::endl;
+
+    return 0;
     yyin = stdin;
     yyparse();
 
