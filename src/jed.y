@@ -1,6 +1,3 @@
-/* Mini Calculator */
-/* calc.y */
-
 %{
     #include "../src/jed.hpp"
     #include <json.hpp>
@@ -46,6 +43,7 @@ sexpr: '.' idstr { $$ = new Node(); }
      | sexpr '[' INT ']' { $$ = new Node(); }
      | sexpr '(' STR ')' { $$ = new Node(); }
      | sexpr '.' idstr { $$ = new Node(); }
+     | sexpr '.' '{' listOfIds '}' { $$ = new Node(); }
 ;
 
 listOfIds: idstr
@@ -66,8 +64,9 @@ int yyerror(const char *s)
 }
 
 int main() {
+    /*
     json j2 = {
-               {"pi", 3.141},
+               {"pi", 3.5},
                {"happy", true},
                {"name", "Niels"},
                {"nothing", nullptr},
@@ -80,10 +79,8 @@ int main() {
                            {"value", 42.99}
                    }}
     };
+    */
 
-    std::cout << typeid(j2["pi"]).name() << std::endl;
-
-    return 0;
     yyin = stdin;
     yyparse();
 
