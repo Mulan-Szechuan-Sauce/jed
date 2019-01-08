@@ -18,7 +18,7 @@ identifiers   ([a-zA-Z_])([a-zA-Z0-9_])*
 
 {integers}      { yylval.int_val = atoi(yytext); return INT; }
 {str}           { yylval.str_val = new std::string(yytext); return STR; }
-{identifiers}   return ID;
+{identifiers}   { yylval.str_val = new std::string(yytext); return ID; }
 ","             return ',';
 "|"             return '|';
 "("             return '(';

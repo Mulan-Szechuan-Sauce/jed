@@ -7,6 +7,8 @@
 
     int yyerror(const char *s);
     int yylex(void);
+
+    Root *program_root;
 %}
 
 %error-verbose
@@ -16,6 +18,7 @@
     std::string *str_val;
     Root *root_val;
     Node *node_val;
+    std::list<std::string *> *str_list_val;
 }
 
 %start program
@@ -24,30 +27,30 @@
 %token '(' ')' '[' ']' '.' '|' '{' '}'
 %type <int_val> INT
 %type <str_val> STR ID idstr
-%type <root_val> program
 %type <node_val> sexpr
+%type <str_list_val> listOfIds
 
 %%
 
-program: sexpr { $$ = new NodeRoot($1); }
-       | INT { $$ = new IntRoot($1); }
-       | STR { $$ = new StrRoot($1); }
+program: sexpr { program_root = new NodeRoot($1); }
+       | INT { program_root = new IntRoot($1); }
+       | STR { program_root = new StrRoot($1); }
 ;
 
 idstr: ID { $$ = $1; }
      | STR { $$ = $1; }
 ;
 
-sexpr: '.' idstr { $$ = new Node(); }
-     | '.' '{' listOfIds '}' { $$ = new Node(); }
-     | sexpr '[' INT ']' { $$ = new Node(); }
-     | sexpr '(' STR ')' { $$ = new Node(); }
-     | sexpr '.' idstr { $$ = new Node(); }
-     | sexpr '.' '{' listOfIds '}' { $$ = new Node(); }
+sexpr: '.' idstr { $$ = new IdNode($2); }
+     | '.' '{' listOfIds '}' { $$ = new IdListNode($3); }
+     | sexpr '.' idstr { $$->add_next(new IdNode($3)); }
+     | sexpr '.' '{' listOfIds '}' { $$->add_next(new IdListNode($4)); }
+     //         | sexpr '[' INT ']' { $$->add_next(); }
+     //         | sexpr '(' STR ')' { $$->add_next(); }
 ;
 
-listOfIds: idstr
-         | idstr ',' listOfIds
+listOfIds: idstr { $$ = new std::list<std::string *>(); $$->push_front($1); }
+         | idstr ',' listOfIds { $3->push_front($1); $$ = $3; }
 ;
 
 %%
@@ -84,5 +87,6 @@ int main() {
     yyin = stdin;
     yyparse();
 
+    std::cout << program_root->repr() << std::endl;
     return 0;
 }
