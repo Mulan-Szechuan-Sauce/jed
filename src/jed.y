@@ -41,12 +41,12 @@ idstr: ID { $$ = $1; }
      | STR { $$ = $1; }
 ;
 
-sexpr: '.' idstr { $$ = new IdNode($2); }
-     | '.' '{' listOfIds '}' { $$ = new IdListNode($3); }
-     | sexpr '.' idstr { $$->add_next(new IdNode($3)); }
-     | sexpr '.' '{' listOfIds '}' { $$->add_next(new IdListNode($4)); }
-     //         | sexpr '[' INT ']' { $$->add_next(); }
-     //         | sexpr '(' STR ')' { $$->add_next(); }
+sexpr: '.' idstr                   { $$ = new IdNode($2); }
+     | '.' '{' listOfIds '}'       { $$ = new IdListNode($3); }
+     | sexpr '.' idstr             { $$->append_tail(new IdNode($3)); }
+     | sexpr '.' '{' listOfIds '}' { $$->append_tail(new IdListNode($4)); }
+     | sexpr '[' INT ']'           { $$->append_tail(new ListIndexNode($3)); }
+     //| sexpr '(' STR ')' { $$->add_next(); }
 ;
 
 listOfIds: idstr { $$ = new std::list<std::string *>(); $$->push_front($1); }

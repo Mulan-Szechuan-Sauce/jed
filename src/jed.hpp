@@ -9,13 +9,23 @@ using json = nlohmann::json;
 
 class Node {
     Node *next;
+    // Note: Never access this directly, lest you be judged by the Lord
+    Node *tail;
 
 public:
     //virtual bool matches(json *other) = 0;
     virtual std::string repr() = 0;
 
-    void add_next(Node *next) {
-        this->next = next;
+    void append_tail(Node *tail) {
+        if (this->tail) {
+            this->tail->append_tail(tail);
+        }
+
+        this->tail = tail;
+
+        if ( ! this->next) {
+            this->next = tail;
+        }
     }
 
     Node* get_next() {
@@ -30,7 +40,7 @@ public:
     IdNode(std::string *id) : id(id) {}
 
     std::string repr() {
-        return *id;
+        return "." + *id;
     }
 };
 
@@ -41,7 +51,7 @@ public:
 
     std::string repr() {
         std::stringstream stream;
-        stream << "{";
+        stream << ".{";
         for (std::string *val : *idList) {
             stream << *val << ", ";
         }
@@ -99,7 +109,7 @@ public:
     std::string repr() {
         std::stringstream stream;
         for (Node *current = value; current; current = current->get_next()) {
-            stream << "." << current->repr();
+            stream << current->repr();
         }
         return stream.str();
     }
