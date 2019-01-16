@@ -50,6 +50,18 @@ public:
     }
 };
 
+class ListIndexNode : public Node {
+public:
+    int index;
+    ListIndexNode(int index) : index(index) {}
+
+    std::string repr() {
+        std::stringstream stream;
+        stream << "[" << index << "]";
+        return stream.str();
+    }
+};
+
 class Root {
 public:
     virtual bool matches(json *other) = 0;
